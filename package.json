@@ -1,0 +1,36 @@
+{
+    "name": "whatstats",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "author": {
+        "name": "MoBakour",
+        "email": "mo.bakour@outlook.com",
+        "url": "https://bakour.dev",
+        "github": "https://github.com/MoBakour"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vue-tsc -b && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@tailwindcss/vite": "^4.1.5",
+        "@types/luxon": "^3.6.2",
+        "chart.js": "^4.4.9",
+        "lucide-vue-next": "^0.507.0",
+        "luxon": "^3.6.1",
+        "tailwindcss": "^4.1.5",
+        "vue": "^3.5.13",
+        "vue-chartjs": "^5.3.2",
+        "vue-router": "^4.5.1",
+        "whatsapp-chat-parser": "^4.0.2"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.2.2",
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "~5.7.2",
+        "vite": "^6.3.1",
+        "vue-tsc": "^2.2.8"
+    }
+}
