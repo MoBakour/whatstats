@@ -17,7 +17,7 @@ import { Github, Linkedin, Link } from "lucide-vue-next";
                 class="cursor-pointer transition hover:opacity-70"
                 title="GitHub Repository"
             >
-                <Github class="text-white" size="20"
+                <Github class="text-white w-[20px]"
             /></a>
             <a
                 href="https://linkedin.com/in/mobakour/"
@@ -25,7 +25,7 @@ import { Github, Linkedin, Link } from "lucide-vue-next";
                 class="cursor-pointer transition hover:opacity-70"
                 title="LinkedIn Profile"
             >
-                <Linkedin class="text-white" size="20" />
+                <Linkedin class="text-white w-[20px]" />
             </a>
             <a
                 href="https://bakour.dev"
@@ -33,7 +33,7 @@ import { Github, Linkedin, Link } from "lucide-vue-next";
                 class="cursor-pointer transition hover:opacity-70"
                 title="My Portfolio"
             >
-                <Link class="text-white" size="20" />
+                <Link class="text-white w-[20px]" />
             </a>
         </div>
 

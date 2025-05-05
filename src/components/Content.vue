@@ -15,7 +15,7 @@ const {
     getMessageCountByHourOfDay,
 } = useProcess();
 
-const processFile = async (file) => {
+const processFile = async (file: File | null) => {
     if (!file) {
         alert("Please select a file first.");
         return;
@@ -25,12 +25,7 @@ const processFile = async (file) => {
 
     try {
         isProcessing.value = true;
-        console.log("Starting processing:", uploadedFile.value.name);
-        await parseData(uploadedFile.value);
-        console.log(
-            "Processing complete. Total messages:",
-            messages.value.length
-        );
+        await parseData(uploadedFile.value as File);
     } catch (error) {
         console.error("Error processing file:", error);
         alert("There was an error processing the file. Please try again.");

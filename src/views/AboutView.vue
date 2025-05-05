@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Header from "../components/Header.vue";
 import Title from "../components/Title.vue";
 </script>
 

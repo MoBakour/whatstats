@@ -13,7 +13,7 @@ import {
     BarElement,
 } from "chart.js";
 import { Pie, Line, Bar } from "vue-chartjs";
-import { Message, TimeSeriesData } from "../composables/useProcess";
+import type { Message, TimeSeriesData } from "../composables/useProcess";
 import Title from "./Title.vue";
 
 // Register Chart.js components
@@ -41,7 +41,8 @@ const props = defineProps<{
 }>();
 
 // Time interval selection
-const selectedTimeInterval = ref<"day" | "week" | "month">("day");
+type TimeInterval = "day" | "week" | "month";
+const selectedTimeInterval = ref<TimeInterval>("day");
 const timeIntervalOptions = [
     { label: "Daily", value: "day" },
     { label: "Weekly", value: "week" },
@@ -118,17 +119,12 @@ const hourlyActivityChartData = computed(() => {
     };
 });
 
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-};
-
 const pieChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
         legend: {
-            position: "right",
+            position: "right" as const,
             labels: {
                 color: "white",
             },
@@ -241,7 +237,10 @@ const lineChartOptions = {
                         <button
                             v-for="option in timeIntervalOptions"
                             :key="option.value"
-                            @click="selectedTimeInterval = option.value"
+                            @click="
+                                selectedTimeInterval =
+                                    option.value as TimeInterval
+                            "
                             class="px-3 py-1 rounded text-sm"
                             :class="[
                                 selectedTimeInterval === option.value

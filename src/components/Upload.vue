@@ -5,7 +5,6 @@ import Title from "./Title.vue";
 
 // Props and emits for passing data with parent
 const props = defineProps<{
-    uploadedFile: File | null;
     isProcessing: boolean;
 }>();
 
@@ -22,14 +21,13 @@ const handleDrop = (event: DragEvent) => {
         const file = files[0];
         if (file.type === "text/plain") {
             emit("process-file", file);
-            console.log("File dropped:", file);
         } else {
             alert("Only .txt files are allowed.");
         }
     }
 };
 
-const handleDragOver = (event: DragEvent) => {
+const handleDragOver = () => {
     isDragging.value = true;
 };
 
@@ -44,7 +42,6 @@ const handleFileInput = (event: Event) => {
         const file = files[0];
         if (file.type === "text/plain") {
             emit("process-file", file);
-            console.log("File selected:", file);
         } else {
             alert("Only .txt files are allowed.");
         }
@@ -69,7 +66,7 @@ const handleFileInput = (event: Event) => {
                     @dragleave="handleDragLeave"
                     @drop.prevent="handleDrop"
                 >
-                    <Upload class="inline-block mr-2" size="24" />
+                    <Upload class="inline-block mr-2 w-[24px]" />
                     <p class="text-center">
                         Drag and drop files here, or click to upload
                     </p>
@@ -82,6 +79,7 @@ const handleFileInput = (event: Event) => {
                     class="hidden"
                     accept=".txt"
                     @change="handleFileInput"
+                    :disabled="props.isProcessing"
                 />
             </form>
         </div>
