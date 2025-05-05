@@ -91,6 +91,15 @@ const topSendersOptions = [
     { label: "ALL", value: "ALL" },
 ];
 
+// Shuffle Function
+const shuffle = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 // Chart data
 const senderChartData = computed(() => {
     const topSenders =
@@ -103,15 +112,22 @@ const senderChartData = computed(() => {
             {
                 label: "Messages",
                 data: topSenders.map((item) => item.count),
-                backgroundColor: [
-                    "#25d366",
-                    "#128C7E",
-                    "#075E54",
-                    "#34B7F1",
-                    "#ECE5DD",
-                    "#DCF8C6",
-                    "#FF0000",
-                ],
+                backgroundColor: shuffle([
+                    "#25D366",
+                    "#1E4F43",
+                    "#3B675C",
+                    "#5B8F87",
+                    "#6C7D73",
+                    "#557C9B",
+                    "#476D8A",
+                    "#7C8F96",
+                    "#A4B0A5",
+                    "#938C6A",
+                    "#8D6E63",
+                    "#A67C82",
+                    "#999C85",
+                    "#B5C2B7",
+                ]),
                 hoverOffset: 4,
             },
         ],

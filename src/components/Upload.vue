@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Upload } from "lucide-vue-next";
+import { Upload, Loader } from "lucide-vue-next";
 import Title from "./Title.vue";
 
 // Props and emits for passing data with parent
@@ -15,6 +15,8 @@ const emit = defineEmits<{
 const isDragging = ref(false);
 
 const handleDrop = (event: DragEvent) => {
+    if (props.isProcessing) return;
+
     isDragging.value = false;
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
@@ -40,6 +42,8 @@ const handleDragLeave = () => {
 };
 
 const handleFileInput = (event: Event) => {
+    if (props.isProcessing) return;
+
     const target = event.target as HTMLInputElement;
     const files = target.files;
     if (files && files.length > 0) {
@@ -67,18 +71,28 @@ const handleFileInput = (event: Event) => {
             <form>
                 <!-- drag and drop box -->
                 <label
-                    class="w-full border-2 border-dashed border-gray-400 rounded-lg px-6 py-10 cursor-pointer text-white font-medium opacity-40 flex flex-col items-center justify-center gap-2 hover:opacity-70 transition-opacity"
+                    class="w-full border-2 border-dashed border-gray-400 rounded-lg px-6 py-10 text-white font-medium opacity-40 flex flex-col items-center justify-center gap-2 transition-opacity"
                     for="fileInput"
-                    :class="{ 'bg-gray-100': isDragging }"
+                    :class="[
+                        {
+                            'bg-gray-100': isDragging,
+                        },
+                        props.isProcessing
+                            ? 'pointer-events-none'
+                            : 'cursor-pointer hover:opacity-70',
+                    ]"
                     @dragover.prevent="handleDragOver"
                     @dragleave="handleDragLeave"
                     @drop.prevent="handleDrop"
                 >
-                    <Upload class="inline-block mr-2 w-[24px]" />
-                    <p class="text-center">
-                        Drag and drop WhatsApp chat (.txt) or export (.zip)
-                        files here, or click to upload
-                    </p>
+                    <template v-if="!props.isProcessing">
+                        <Upload class="inline-block mr-2 w-[24px]" />
+                        <p class="text-center">
+                            Drag and drop WhatsApp chat (.txt) or export (.zip)
+                            files here, or click to upload
+                        </p>
+                    </template>
+                    <Loader v-else class="animate-spin scale-150" />
                 </label>
 
                 <!-- hidden file input -->
