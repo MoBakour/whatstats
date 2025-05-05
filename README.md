@@ -14,7 +14,7 @@ WhatStats is a tool that provides in-depth analysis and visualization of WhatsAp
 
 ## Live Demo
 
-Visit [WhatStats](https://whatstats.netlify.app) to try the application online.
+Visit [WhatStats](https://whatstats.vercel.app) to try the application online.
 
 ## How to Use
 
