@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { DateTime } from "luxon";
 import * as whatsapp from "whatsapp-chat-parser";
+import { unzip } from "fflate";
 
 export interface Message {
     sender: string;
@@ -15,23 +16,118 @@ export interface TimeSeriesData {
 
 export function useProcess() {
     const messages = ref<Message[]>([]);
+    const isProcessing = ref<boolean>(false);
+    const processingError = ref<string | null>(null);
 
     const parseData = async (file: File): Promise<void> => {
-        const rawData = await new Promise<string>((resolve, reject) => {
+        isProcessing.value = true;
+        processingError.value = null;
+
+        try {
+            let rawData: string;
+
+            // Check if the file is a zip file
+            if (file.type === "application/zip" || file.name.endsWith(".zip")) {
+                rawData = await extractChatFromZip(file);
+            } else {
+                // Regular text file processing
+                rawData = await readFileAsText(file);
+            }
+
+            messages.value = whatsapp.parseString(rawData).map(
+                (message) =>
+                    ({
+                        sender: message.author,
+                        message: message.message,
+                        timestamp: message.date,
+                    } as Message)
+            );
+        } catch (error) {
+            processingError.value =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error processing file";
+            console.error("Error processing file:", error);
+        } finally {
+            isProcessing.value = false;
+        }
+    };
+
+    // Helper function to read file as text
+    const readFileAsText = (file: File): Promise<string> => {
+        return new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result as string);
             reader.onerror = () => reject(reader.error);
             reader.readAsText(file);
         });
+    };
 
-        messages.value = whatsapp.parseString(rawData).map(
-            (message) =>
-                ({
-                    sender: message.author,
-                    message: message.message,
-                    timestamp: message.date,
-                } as Message)
-        );
+    // Helper function to extract _chat.txt from a zip file
+    const extractChatFromZip = async (zipFile: File): Promise<string> => {
+        return new Promise<string>((resolve, reject) => {
+            // Convert the File to an ArrayBuffer
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                if (!event.target?.result) {
+                    reject(new Error("Failed to read zip file"));
+                    return;
+                }
+
+                const data = event.target.result as ArrayBuffer;
+
+                // Process the zip file
+                unzip(
+                    new Uint8Array(data),
+                    {
+                        filter(file) {
+                            // Look for _chat.txt or any text file that might contain chats
+                            return (
+                                file.name.includes("_chat.txt") ||
+                                file.name.endsWith(".txt")
+                            );
+                        },
+                    },
+                    (err, unzipped) => {
+                        if (err) {
+                            reject(
+                                new Error(
+                                    `Failed to unzip file: ${err.message}`
+                                )
+                            );
+                            return;
+                        }
+
+                        // Find _chat.txt file
+                        const chatFileName = Object.keys(unzipped).find(
+                            (name) =>
+                                name.includes("_chat.txt") ||
+                                name.endsWith(".txt")
+                        );
+
+                        if (!chatFileName || !unzipped[chatFileName]) {
+                            reject(
+                                new Error(
+                                    "No chat file found in the zip archive"
+                                )
+                            );
+                            return;
+                        }
+
+                        // Convert the Uint8Array to a string
+                        const decoder = new TextDecoder("utf-8");
+                        const chatContent = decoder.decode(
+                            unzipped[chatFileName]
+                        );
+                        resolve(chatContent);
+                    }
+                );
+            };
+
+            reader.onerror = () =>
+                reject(reader.error || new Error("Failed to read zip file"));
+            reader.readAsArrayBuffer(zipFile);
+        });
     };
 
     const getSenderFrequency = (): Record<string, number> => {
@@ -139,5 +235,7 @@ export function useProcess() {
         getTopSenders,
         getTimeSeriesData,
         getMessageCountByHourOfDay,
+        isProcessing,
+        processingError,
     };
 }

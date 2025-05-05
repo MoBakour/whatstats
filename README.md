@@ -27,14 +27,16 @@ Visit [WhatStats](https://whatstats.vercel.app) to try the application online.
       <br /><img src="./public/guide.jpg" alt="Export Chat Guide" width="200" />
       <br />
 
-2. **Extract the chat.txt file**:
+2. **Upload the exported files**:
 
-    - Open the ZIP file you downloaded
-    - Extract the `_chat.txt` file
-
-3. **Upload and analyze**:
     - Visit [WhatStats](https://whatstats.vercel.app) or run the app locally
-    - Upload the extracted `_chat.txt` file
+    - Upload either the `_chat.txt` file or the exported `.zip` file directly.
+
+3. **Analyze and view your chat statistics**:
+
+    - Discover the most active participants in group chats
+    - Analyze yearly, monthly, and weekly messaging trends
+    - Identify peak activity hours within the chat
 
 ## Privacy
 

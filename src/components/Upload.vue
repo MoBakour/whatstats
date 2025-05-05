@@ -19,10 +19,14 @@ const handleDrop = (event: DragEvent) => {
     const files = event.dataTransfer?.files;
     if (files && files.length > 0) {
         const file = files[0];
-        if (file.type === "text/plain") {
+        if (
+            file.type === "text/plain" ||
+            file.type === "application/zip" ||
+            file.name.endsWith(".zip")
+        ) {
             emit("process-file", file);
         } else {
-            alert("Only .txt files are allowed.");
+            alert("Only .txt or .zip files are allowed.");
         }
     }
 };
@@ -40,10 +44,14 @@ const handleFileInput = (event: Event) => {
     const files = target.files;
     if (files && files.length > 0) {
         const file = files[0];
-        if (file.type === "text/plain") {
+        if (
+            file.type === "text/plain" ||
+            file.type === "application/zip" ||
+            file.name.endsWith(".zip")
+        ) {
             emit("process-file", file);
         } else {
-            alert("Only .txt files are allowed.");
+            alert("Only .txt or .zip files are allowed.");
         }
     }
 };
@@ -68,7 +76,8 @@ const handleFileInput = (event: Event) => {
                 >
                     <Upload class="inline-block mr-2 w-[24px]" />
                     <p class="text-center">
-                        Drag and drop files here, or click to upload
+                        Drag and drop WhatsApp chat (.txt) or export (.zip)
+                        files here, or click to upload
                     </p>
                 </label>
 
@@ -77,7 +86,7 @@ const handleFileInput = (event: Event) => {
                     id="fileInput"
                     type="file"
                     class="hidden"
-                    accept=".txt"
+                    accept=".txt,.zip"
                     @change="handleFileInput"
                     :disabled="props.isProcessing"
                 />

@@ -27,18 +27,18 @@ const handleShowImage = (status: boolean) => {
                     <li>
                         <span>1. </span>
                         <span class="text-text">Export</span> WhatsApp chat
-                        without media.
+                        without media
                     </li>
                     <li>
                         <span>2. </span>
-                        <span class="text-text">Extract </span>
-                        <code>_chat.txt</code> from the exported zip folder.
+                        <span class="text-text">Upload</span> either the
+                        <code>.zip</code> file or the
+                        <code>_chat.txt</code> file
                     </li>
                     <li>
                         <span>3. </span>
-                        <span class="text-text">Upload </span>
-                        <code>_chat.txt</code> to the website and view
-                        statistics.
+                        <span class="text-text">View</span> your chat statistics
+                        instantly
                     </li>
                 </ul>
             </div>
