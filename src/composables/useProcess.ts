@@ -130,7 +130,7 @@ export function useProcess() {
         });
     };
 
-    const getSenderFrequency = (): Record<string, number> => {
+    const getSenderFrequency = () => {
         const frequency: Record<string, number> = {};
 
         messages.value.forEach((message) => {
@@ -141,14 +141,14 @@ export function useProcess() {
             }
         });
 
-        return frequency;
+        return Object.entries(frequency).sort(([, a], [, b]) => b - a);
     };
 
     const getTopSenders = (
         limit?: number
     ): { sender: string; count: number }[] => {
         const frequency = getSenderFrequency();
-        const sortedSenders = Object.entries(frequency)
+        const sortedSenders = frequency
             .map(([sender, count]) => ({ sender, count }))
             .sort((a, b) => b.count - a.count);
 

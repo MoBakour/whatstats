@@ -65,7 +65,7 @@ const handleShowImage = (status: boolean) => {
         <img src="/guide.jpg" class="max-h-7/8 max-w-7/8 rounded-lg" />
 
         <button
-            class="absolute top-4 right-4 text-white text-5xl transition hover:opacity-70 cursor-pointer"
+            class="absolute top-4 right-8 text-white text-5xl transition hover:opacity-70 cursor-pointer"
             @click="handleShowImage(false)"
         >
             &times;

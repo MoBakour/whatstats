@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import { Pie, Line, Bar } from "vue-chartjs";
 import type { Message, TimeSeriesData } from "../composables/useProcess";
+import { Text } from "lucide-vue-next";
 import Title from "./Title.vue";
 
 // Register Chart.js components
@@ -32,13 +33,34 @@ ChartJS.register(
 // Define props for the component
 const props = defineProps<{
     messages: Message[];
-    getSenderFrequency: () => Record<string, number>;
+    getSenderFrequency: () => [string, number][];
     getTopSenders: (limit?: number) => { sender: string; count: number }[];
     getTimeSeriesData: (
         interval?: "day" | "week" | "month"
     ) => TimeSeriesData[];
     getMessageCountByHour: () => number[];
 }>();
+
+const senders = computed(() => {
+    return props.getSenderFrequency() || [];
+});
+const pieChartDetails = ref(false);
+const searchQuery = ref("");
+const filteredSenders = computed(() => {
+    if (searchQuery.value === "") return senders.value;
+
+    return senders.value.filter((sender: [string, number]) =>
+        sender[0]
+            .toLowerCase()
+            .trim()
+            .includes(searchQuery.value.toLowerCase().trim())
+    );
+});
+
+// Number formatter
+const formatNumber = (num: number) => {
+    return new Intl.NumberFormat().format(num);
+};
 
 // Time interval selection
 type TimeInterval = "day" | "week" | "month";
@@ -66,7 +88,7 @@ const senderChartData = computed(() => {
             ? props.getTopSenders()
             : props.getTopSenders(selectedTopSendersLimit.value);
     return {
-        labels: topSenders.map((item) => item.sender),
+        labels: topSenders.slice(0, 14).map((item) => item.sender),
         datasets: [
             {
                 label: "Messages",
@@ -184,14 +206,14 @@ const lineChartOptions = {
                 <p>
                     Your chat consists of
                     <span class="text-text font-bold">{{
-                        messages.length
+                        formatNumber(messages.length)
                     }}</span>
                     messages
                 </p>
                 <p>
                     Sent by
                     <span class="text-text font-bold"
-                        >{{ Object.keys(getSenderFrequency()).length }}
+                        >{{ formatNumber(senders.length) }}
                     </span>
                     members
                 </p>
@@ -199,9 +221,9 @@ const lineChartOptions = {
 
             <!-- Top senders pie chart -->
             <div
-                class="bg-gray-800 bg-opacity-50 p-4 rounded-lg text-white mt-6"
+                class="bg-gray-800 bg-opacity-50 p-4 rounded-lg text-white mt-6 flex flex-col gap-4"
             >
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center">
                     <h2 class="text-text font-bold text-xl">
                         Top Message Senders
                     </h2>
@@ -221,6 +243,14 @@ const lineChartOptions = {
                 <div class="h-80">
                     <Pie :data="senderChartData" :options="pieChartOptions" />
                 </div>
+                <button
+                    class="self-end text-text flex justify-center items-center gap-2 hover:opacity-70 transition cursor-pointer"
+                    title="View More Details"
+                    @click="pieChartDetails = true"
+                >
+                    <span>View Details</span>
+                    <Text class="w-[18px]" />
+                </button>
             </div>
 
             <!-- Time series chart -->
@@ -279,4 +309,61 @@ const lineChartOptions = {
             </div>
         </div>
     </section>
+
+    <!-- pie chart details -->
+    <div
+        @click.self="pieChartDetails = false"
+        class="fixed w-screen h-screen inset-0 bg-black/70 flex items-center justify-center z-10 transition"
+        :class="
+            pieChartDetails
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+        "
+    >
+        <div
+            class="scrollable bg-gray-800 p-6 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
+        >
+            <!-- head -->
+            <div
+                class="flex justify-between items-center mb-4 max-sm:flex-col max-sm:items-start max-sm:gap-4"
+            >
+                <h2 class="text-text font-bold text-xl">Top Message Senders</h2>
+
+                <!-- search -->
+                <input
+                    type="text"
+                    placeholder="Search sender..."
+                    class="p-2 bg-gray-700 text-white rounded max-sm:w-full"
+                    v-model="searchQuery"
+                />
+            </div>
+
+            <!-- list all senders and their messages count -->
+            <ul
+                v-if="filteredSenders.length > 0"
+                class="flex flex-col gap-2 mb-4"
+            >
+                <li
+                    v-for="[sender, count] in filteredSenders"
+                    :key="sender"
+                    class="flex justify-between items-center p-2 bg-gray-700 rounded"
+                >
+                    <span>{{ sender }}</span>
+                    <span class="text-text"
+                        >{{ formatNumber(count) }} messages</span
+                    >
+                </li>
+            </ul>
+
+            <!-- placeholder -->
+            <p v-else class="opacity-40">No results found</p>
+
+            <button
+                class="absolute top-4 right-8 text-white text-5xl transition hover:opacity-70 cursor-pointer"
+                @click="pieChartDetails = false"
+            >
+                &times;
+            </button>
+        </div>
+    </div>
 </template>
