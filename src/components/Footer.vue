@@ -4,7 +4,7 @@ import { Github, Linkedin, Link } from "lucide-vue-next";
 
 <template>
     <footer
-        class="pb-4 pt-10 flex justify-center items-center gap-10 max-xs:flex-col-reverse max-xs:gap-4"
+        class="py-10 flex justify-center items-center gap-10 max-xs:flex-col-reverse max-xs:gap-4"
     >
         <p class="text-center text-white text-sm">
             &copy; {{ new Date().getFullYear() }} MoBakour. All rights reserved.

@@ -4,7 +4,7 @@ import Footer from "./components/Footer.vue";
 </script>
 
 <template>
-    <main class="bg-bg min-h-screen">
+    <main class="bg-bg min-h-dvh">
         <div class="max-w-[900px] mx-auto px-10 max-md:px-5 flex flex-col">
             <Header />
             <RouterView />

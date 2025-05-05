@@ -44,7 +44,6 @@ const props = defineProps<{
 const senders = computed(() => {
     return props.getSenderFrequency() || [];
 });
-const pieChartDetails = ref(false);
 const searchQuery = ref("");
 const filteredSenders = computed(() => {
     if (searchQuery.value === "") return senders.value;
@@ -56,6 +55,17 @@ const filteredSenders = computed(() => {
             .includes(searchQuery.value.toLowerCase().trim())
     );
 });
+
+const pieChartDetails = ref(false);
+const handlePieChartDetails = (status: boolean) => {
+    pieChartDetails.value = status;
+
+    if (status === false) {
+        setTimeout(() => {
+            searchQuery.value = "";
+        }, 150);
+    }
+};
 
 // Number formatter
 const formatNumber = (num: number) => {
@@ -246,7 +256,7 @@ const lineChartOptions = {
                 <button
                     class="self-end text-text flex justify-center items-center gap-2 hover:opacity-70 transition cursor-pointer"
                     title="View More Details"
-                    @click="pieChartDetails = true"
+                    @click="handlePieChartDetails(true)"
                 >
                     <span>View Details</span>
                     <Text class="w-[18px]" />
@@ -312,8 +322,8 @@ const lineChartOptions = {
 
     <!-- pie chart details -->
     <div
-        @click.self="pieChartDetails = false"
-        class="fixed w-screen h-screen inset-0 bg-black/70 flex items-center justify-center z-10 transition"
+        @click.self="handlePieChartDetails(false)"
+        class="fixed w-screen h-dvh inset-0 bg-black/70 flex items-center justify-center z-10 transition"
         :class="
             pieChartDetails
                 ? 'opacity-100 pointer-events-auto'
@@ -360,7 +370,7 @@ const lineChartOptions = {
 
             <button
                 class="absolute top-4 right-8 text-white text-5xl transition hover:opacity-70 cursor-pointer"
-                @click="pieChartDetails = false"
+                @click="handlePieChartDetails(false)"
             >
                 &times;
             </button>

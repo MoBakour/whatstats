@@ -54,7 +54,7 @@ const handleShowImage = (status: boolean) => {
     </section>
 
     <div
-        class="fixed inset-0 bg-black/70 flex items-center justify-center z-10 transition"
+        class="fixed w-screen h-dvh inset-0 bg-black/70 flex items-center justify-center z-10 transition"
         :class="
             showImage
                 ? 'opacity-100 pointer-events-auto'
