@@ -42,8 +42,9 @@ Visit [WhatStats](https://whatstats.vercel.app) to try the application online.
     - Tap the three dots (menu) → More → Export chat
     - Choose "Without Media"
     - Download the resulting ZIP file
-      <br /><img src="./public/guide.jpg" alt="Export Chat Guide" width="200" />
-      <br />
+
+        <br /><img src="./public/guide.jpg" alt="Export Chat Guide" width="200" />
+        <br />
 
 2. **Upload the exported files**:
 
