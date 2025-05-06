@@ -34,14 +34,23 @@ export function useProcess() {
                 rawData = await readFileAsText(file);
             }
 
-            messages.value = whatsapp.parseString(rawData).map(
+            let parsed = whatsapp.parseString(rawData).map(
                 (message) =>
                     ({
-                        sender: message.author,
+                        sender: message.author?.trim(),
                         message: message.message,
                         timestamp: message.date,
                     } as Message)
             );
+
+            const groupName = parsed[0]?.sender;
+
+            // Remove messages from the group name and "You"
+            parsed = parsed.filter((msg) => {
+                return msg.sender && ![groupName, "‎You"].includes(msg.sender);
+            });
+
+            messages.value = parsed;
         } catch (error) {
             processingError.value =
                 error instanceof Error
