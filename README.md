@@ -12,6 +12,24 @@ WhatStats is a tool that provides in-depth analysis and visualization of WhatsAp
 -   🔍 **Message Statistics**: Get detailed statistics about message frequency and participants
 -   📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
 
+## Screenshots
+
+Here's What WhatStats Can Do for Your Chat Analysis
+
+Gain Quick Insights into Your Chats
+
+<img src="./assets/image1.png" alt="Chat Analytics Screenshot 1" width="400" />
+<br /><br />
+
+Track Message Activity Trends Over Time
+
+<img src="./assets/image2.png" alt="Chat Analytics Screenshot 2" width="400" />
+<br /><br />
+
+Discover Hourly Messaging Patterns
+
+<img src="./assets/image3.png" alt="Chat Analytics Screenshot 3" width="400" />
+
 ## Live Demo
 
 Visit [WhatStats](https://whatstats.vercel.app) to try the application online.
