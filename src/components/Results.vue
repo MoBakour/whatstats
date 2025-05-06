@@ -107,7 +107,7 @@ const senderChartData = computed(() => {
             ? props.getTopSenders()
             : props.getTopSenders(selectedTopSendersLimit.value);
     return {
-        labels: topSenders.slice(0, 14).map((item) => item.sender),
+        labels: topSenders.map((item) => item.sender),
         datasets: [
             {
                 label: "Messages",
@@ -175,8 +175,19 @@ const pieChartOptions = {
             position: "right" as const,
             labels: {
                 color: "white",
+                generateLabels(chart: ChartJS) {
+                    const allLabels =
+                        ChartJS.overrides.pie.plugins.legend.labels.generateLabels(
+                            chart
+                        );
+                    return allLabels.slice(0, 14); // Limit to 14
+                },
             },
         },
+    },
+    animation: {
+        animateRotate: true,
+        animateScale: true,
     },
 };
 
@@ -347,11 +358,11 @@ const lineChartOptions = {
         "
     >
         <div
-            class="scrollable bg-gray-800 p-6 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
+            class="scrollable bg-gray-800 p-6 pt-0 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
         >
             <!-- head -->
             <div
-                class="flex justify-between items-center mb-4 max-sm:flex-col max-sm:items-start max-sm:gap-4"
+                class="sticky top-0 py-6 bg-gray-800 flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-4"
             >
                 <h2 class="text-text font-bold text-xl">Top Message Senders</h2>
 
