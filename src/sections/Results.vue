@@ -13,9 +13,17 @@ import {
     BarElement,
 } from "chart.js";
 import { Pie, Line, Bar } from "vue-chartjs";
-import type { Message, TimeSeriesData } from "../composables/useProcess";
+import type { Message, TimeSeriesData } from "../utils/constants";
 import { Text } from "lucide-vue-next";
-import Title from "./Title.vue";
+import Title from "../components/Title.vue";
+import Details from "./Details.vue";
+import { formatNumber, shuffle } from "../utils/utils";
+import {
+    type TimeInterval,
+    lineChartOptions,
+    pieChartOptions,
+} from "../utils/constants";
+import IntervalSelector from "../components/IntervalSelector.vue";
 
 // Register Chart.js components
 ChartJS.register(
@@ -36,7 +44,8 @@ const props = defineProps<{
     getSenderFrequency: () => [string, number][];
     getTopSenders: (limit?: number) => { sender: string; count: number }[];
     getTimeSeriesData: (
-        interval?: "day" | "week" | "month"
+        interval?: TimeInterval,
+        sender?: string | null
     ) => TimeSeriesData[];
     getMessageCountByHour: () => number[];
 }>();
@@ -44,42 +53,11 @@ const props = defineProps<{
 const senders = computed(() => {
     return props.getSenderFrequency() || [];
 });
-const searchQuery = ref("");
-const filteredSenders = computed(() => {
-    if (searchQuery.value === "") return senders.value;
-
-    return senders.value.filter((sender: [string, number]) =>
-        sender[0]
-            .toLowerCase()
-            .trim()
-            .includes(searchQuery.value.toLowerCase().trim())
-    );
-});
 
 const pieChartDetails = ref(false);
-const handlePieChartDetails = (status: boolean) => {
-    pieChartDetails.value = status;
-
-    if (status === false) {
-        setTimeout(() => {
-            searchQuery.value = "";
-        }, 150);
-    }
-};
-
-// Number formatter
-const formatNumber = (num: number) => {
-    return new Intl.NumberFormat().format(num);
-};
 
 // Time interval selection
-type TimeInterval = "day" | "week" | "month";
-const selectedTimeInterval = ref<TimeInterval>("day");
-const timeIntervalOptions = [
-    { label: "Daily", value: "day" },
-    { label: "Weekly", value: "week" },
-    { label: "Monthly", value: "month" },
-];
+const selectedInterval = ref<TimeInterval>("month");
 
 // Top senders selection
 const selectedTopSendersLimit = ref<number | "ALL">(7);
@@ -90,15 +68,6 @@ const topSendersOptions = [
     { label: "Top 10", value: 10 },
     { label: "ALL", value: "ALL" },
 ];
-
-// Shuffle Function
-const shuffle = (array: any[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-};
 
 // Chart data
 const senderChartData = computed(() => {
@@ -135,7 +104,7 @@ const senderChartData = computed(() => {
 });
 
 const timeSeriesChartData = computed(() => {
-    const data = props.getTimeSeriesData(selectedTimeInterval.value);
+    const data = props.getTimeSeriesData(selectedInterval.value);
     return {
         labels: data.map((item) => item.date),
         datasets: [
@@ -166,65 +135,6 @@ const hourlyActivityChartData = computed(() => {
         ],
     };
 });
-
-const pieChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {
-            position: "right" as const,
-            labels: {
-                color: "white",
-                generateLabels(chart: ChartJS) {
-                    const allLabels =
-                        ChartJS.overrides.pie.plugins.legend.labels.generateLabels(
-                            chart
-                        );
-                    return allLabels.slice(0, 14); // Limit to 14
-                },
-            },
-        },
-    },
-    animation: {
-        animateRotate: true,
-        animateScale: true,
-    },
-};
-
-const lineChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        x: {
-            ticks: {
-                color: "white",
-                maxRotation: 45,
-                minRotation: 45,
-            },
-            grid: {
-                color: "rgba(255, 255, 255, 0.1)",
-            },
-        },
-        y: {
-            ticks: {
-                color: "white",
-            },
-            grid: {
-                color: "rgba(255, 255, 255, 0.1)",
-            },
-        },
-    },
-    plugins: {
-        legend: {
-            labels: {
-                color: "white",
-            },
-        },
-        tooltip: {
-            backgroundColor: "rgba(0, 0, 0, 0.7)",
-        },
-    },
-};
 </script>
 
 <template>
@@ -283,7 +193,7 @@ const lineChartOptions = {
                 <button
                     class="self-end text-text flex justify-center items-center gap-2 hover:opacity-70 transition cursor-pointer"
                     title="View More Details"
-                    @click="handlePieChartDetails(true)"
+                    @click="pieChartDetails = true"
                 >
                     <span>View Details</span>
                     <Text class="w-[18px]" />
@@ -300,24 +210,11 @@ const lineChartOptions = {
                     <h2 class="text-text font-bold text-xl">
                         Message Activity Over Time
                     </h2>
-                    <div class="flex gap-2">
-                        <button
-                            v-for="option in timeIntervalOptions"
-                            :key="option.value"
-                            @click="
-                                selectedTimeInterval =
-                                    option.value as TimeInterval
-                            "
-                            class="px-3 py-1 rounded text-sm"
-                            :class="[
-                                selectedTimeInterval === option.value
-                                    ? 'bg-text text-white'
-                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 transition cursor-pointer',
-                            ]"
-                        >
-                            {{ option.label }}
-                        </button>
-                    </div>
+
+                    <IntervalSelector
+                        :selectedInterval="selectedInterval"
+                        @update:selectedInterval="selectedInterval = $event"
+                    />
                 </div>
                 <div class="h-80">
                     <Line
@@ -348,59 +245,10 @@ const lineChartOptions = {
     </section>
 
     <!-- pie chart details -->
-    <div
-        @click.self="handlePieChartDetails(false)"
-        class="fixed w-screen h-dvh inset-0 bg-black/70 flex items-center justify-center z-10 transition"
-        :class="
-            pieChartDetails
-                ? 'opacity-100 pointer-events-auto'
-                : 'opacity-0 pointer-events-none'
-        "
-    >
-        <div
-            class="scrollable bg-gray-800 p-6 pt-0 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
-        >
-            <!-- head -->
-            <div
-                class="sticky top-0 py-6 bg-gray-800 flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-4"
-            >
-                <h2 class="text-text font-bold text-xl">Top Message Senders</h2>
-
-                <!-- search -->
-                <input
-                    type="text"
-                    placeholder="Search sender..."
-                    class="p-2 bg-gray-700 text-white rounded max-sm:w-full"
-                    v-model="searchQuery"
-                />
-            </div>
-
-            <!-- list all senders and their messages count -->
-            <ul
-                v-if="filteredSenders.length > 0"
-                class="flex flex-col gap-2 mb-4"
-            >
-                <li
-                    v-for="[sender, count] in filteredSenders"
-                    :key="sender"
-                    class="flex justify-between items-center p-2 bg-gray-700 rounded"
-                >
-                    <span>{{ sender }}</span>
-                    <span class="text-text"
-                        >{{ formatNumber(count) }} messages</span
-                    >
-                </li>
-            </ul>
-
-            <!-- placeholder -->
-            <p v-else class="opacity-40">No results found</p>
-
-            <button
-                class="absolute top-4 right-8 text-white text-5xl transition hover:opacity-70 cursor-pointer"
-                @click="handlePieChartDetails(false)"
-            >
-                &times;
-            </button>
-        </div>
-    </div>
+    <Details
+        :senders="senders"
+        :pieChartDetails="pieChartDetails"
+        :getTimeSeriesData="getTimeSeriesData"
+        @close="pieChartDetails = false"
+    />
 </template>

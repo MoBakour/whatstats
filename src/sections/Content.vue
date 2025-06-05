@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Results from "./Results.vue";
-import Upload from "./Upload.vue";
+import Upload from "../components/Upload.vue";
 import { useProcess } from "../composables/useProcess";
 
 const uploadedFile = ref<File | null>(null);

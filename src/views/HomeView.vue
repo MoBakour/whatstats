@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Guide from "../components/Guide.vue";
-import Content from "../components/Content.vue";
+import Content from "../sections/Content.vue";
 </script>
 
 <template>

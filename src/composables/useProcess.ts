@@ -2,17 +2,7 @@ import { ref } from "vue";
 import { DateTime } from "luxon";
 import * as whatsapp from "whatsapp-chat-parser";
 import { unzip } from "fflate";
-
-export interface Message {
-    sender: string;
-    message: string;
-    timestamp: Date;
-}
-
-export interface TimeSeriesData {
-    date: string;
-    count: number;
-}
+import type { Message, TimeSeriesData, TimeInterval } from "../utils/constants";
 
 export function useProcess() {
     const messages = ref<Message[]>([]);
@@ -167,18 +157,24 @@ export function useProcess() {
     };
 
     const getTimeSeriesData = (
-        interval: "day" | "week" | "month" = "day"
+        interval: TimeInterval = "month",
+        sender: string | null = null
     ): TimeSeriesData[] => {
-        if (messages.value.length === 0) return [];
+        let msgs = [...messages.value];
+        if (msgs.length === 0) return [];
+
+        if (sender) {
+            msgs = msgs.filter((message) => message.sender === sender);
+        }
 
         // Sort messages by timestamp
-        const sortedMessages = [...messages.value].sort(
+        const sortedMessages = msgs.sort(
             (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
         );
 
         // Determine date format based on interval
         let dateFormat: string;
-        let luxonUnit: "day" | "week" | "month";
+        let luxonUnit: TimeInterval;
 
         switch (interval) {
             case "week":

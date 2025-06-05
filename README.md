@@ -14,7 +14,7 @@ WhatStats is a tool that provides in-depth analysis and visualization of WhatsAp
 
 ## Screenshots
 
-Here's What WhatStats Can Do for Your Chat Analysis
+Here's what WhatStats can do for your chat analysis
 
 Gain Quick Insights into Your Chats
 
@@ -29,6 +29,11 @@ Track Message Activity Trends Over Time
 Discover Hourly Messaging Patterns
 
 <img src="./assets/image3.png" alt="Chat Analytics Screenshot 3" width="400" />
+<br /><br />
+
+View Participant's Messaging Trends
+
+<img src="./assets/image4.png" alt="Chat Analytics Screenshot 4" width="400" />
 
 ## Live Demo
 
