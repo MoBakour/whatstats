@@ -192,6 +192,10 @@ export function useProcess() {
                 break;
         }
 
+        // Get current date and exclude current period
+        const now = DateTime.now();
+        const currentPeriod = now.toFormat(dateFormat);
+
         // Group messages by date
         const timeSeriesMap = new Map<string, number>();
 
@@ -204,7 +208,11 @@ export function useProcess() {
         // Initialize all dates in range with zero counts
         let currentDate = firstDate;
         while (currentDate <= lastDate) {
-            timeSeriesMap.set(currentDate.toFormat(dateFormat), 0);
+            const formattedDate = currentDate.toFormat(dateFormat);
+            // Skip current period
+            if (formattedDate !== currentPeriod) {
+                timeSeriesMap.set(formattedDate, 0);
+            }
             currentDate = currentDate.plus({ [luxonUnit]: 1 });
         }
 
@@ -213,7 +221,10 @@ export function useProcess() {
             const date = DateTime.fromJSDate(message.timestamp).toFormat(
                 dateFormat
             );
-            timeSeriesMap.set(date, (timeSeriesMap.get(date) || 0) + 1);
+            // Skip current period
+            if (date !== currentPeriod) {
+                timeSeriesMap.set(date, (timeSeriesMap.get(date) || 0) + 1);
+            }
         });
 
         // Convert map to array

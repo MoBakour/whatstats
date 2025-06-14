@@ -81,11 +81,11 @@ const timeSeriesChartData = computed(() => {
         "
     >
         <div
-            class="scrollable bg-gray-800 p-6 pt-0 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
+            class="scrollable bg-gray-800 py-6 pt-0 rounded-lg text-white w-11/12 max-w-2xl max-h-7/8 overflow-y-auto"
         >
             <!-- head -->
             <div
-                class="sticky top-0 py-6 bg-gray-800 flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-4"
+                class="sticky top-0 p-6 bg-gray-800 flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-4 z-10"
             >
                 <h2 class="text-text font-bold text-xl flex items-center">
                     <ArrowLeft
@@ -124,7 +124,7 @@ const timeSeriesChartData = computed(() => {
             <div v-if="!senderDetails">
                 <ul
                     v-if="filteredSenders.length > 0"
-                    class="flex flex-col gap-2 mb-4"
+                    class="flex flex-col gap-2 mb-4 px-6"
                 >
                     <li
                         v-for="[sender, count] in filteredSenders"
@@ -144,12 +144,12 @@ const timeSeriesChartData = computed(() => {
             </div>
 
             <!-- sender messages activity over time -->
-            <div class="h-80" v-else>
+            <div class="h-80 px-6" v-else>
                 <Line :data="timeSeriesChartData" :options="lineChartOptions" />
             </div>
 
             <button
-                class="absolute top-4 right-8 text-white text-5xl transition hover:opacity-70 cursor-pointer"
+                class="absolute top-4 right-8 text-white text-5xl w-6 h-6 overflow-hidden flex items-center justify-center transition hover:opacity-70 cursor-pointer z-20"
                 @click="handleClose"
             >
                 &times;
